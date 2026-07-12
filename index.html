@@ -1,0 +1,169 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Clear Maker 2B (生徒用)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="student.css?v=1.4.61">
+</head>
+<body>
+    <header class="app-header" style="align-items: center;">
+        <div style="display: flex; align-items: baseline; gap: 8px;">
+            <h1>Clear Maker 2B</h1>
+            <span style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.8); font-weight: 600;">v1.4.64</span>
+        </div>
+        <div class="header-actions">
+            <button id="admin-check-btn" class="header-check-btn hidden" type="button">確認</button>
+            <button id="settings-btn" class="icon-btn" type="button" aria-label="設定">⚙</button>
+        </div>
+    </header>
+
+    <main class="app-content">
+        <div id="setup-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2>初期設定</h2>
+                <p>生徒番号と氏名を登録してください。</p>
+                <div class="form-group">
+                    <label for="student-id">生徒番号 / No.</label>
+                    <input type="text" id="student-id" placeholder="例: 0001">
+                </div>
+                <div class="form-group">
+                    <label for="student-name">氏名</label>
+                    <input type="text" id="student-name" placeholder="例: 山田太郎">
+                </div>
+                <button id="save-setup-btn" class="primary-btn" type="button">登録する</button>
+            </div>
+        </div>
+
+        <div id="user-info" class="user-info hidden">
+            <span>生徒: </span><span id="achievement-stars" class="achievement-stars"></span><strong id="display-student-id"></strong>
+        </div>
+
+        <div id="result-section" class="result-section hidden">
+            <div id="result-badge" class="result-badge"></div>
+            <div class="result-review-layout">
+                <div id="graded-problem-display" class="graded-problem-display hidden">
+                    <div id="graded-problem-label" class="problem-display-label"></div>
+                    <img id="graded-problem-image" class="problem-display-image" alt="添削した問題画像">
+                    <div id="graded-problem-message" class="problem-display-message"></div>
+                </div>
+                <div class="result-details">
+                    <div class="result-heading">
+                        <h3>添削結果</h3>
+                        <button id="toggle-problem-btn" class="result-problem-toggle hidden" type="button" aria-expanded="true" aria-controls="graded-problem-display">問題を表示する</button>
+                    </div>
+                    <div id="result-content" class="markdown-body"></div>
+
+                    <button id="screenshot-btn" class="primary-btn result-action-btn screenshot-exclude" type="button">📷添削画面を画像で保存📷</button>
+                    <button id="new-question-btn" class="secondary-btn result-action-btn" type="button">別の問題を添削する</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="problem-section" class="problem-section" style="background: var(--bg-secondary); padding: 20px; border-radius: var(--radius-lg); margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+            <div id="problem-picker" class="problem-picker">
+                <label style="font-weight: 600; display: block; margin-bottom: 8px;">解答する回</label>
+                <div id="ura-mode-banner" class="ura-mode-banner hidden">裏モード開放！</div>
+                <div class="legacy-problem-select" style="display: flex; gap: 10px;">
+                    <select id="round-select" style="flex: 1; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 1rem; background-color: var(--bg-primary);">
+                        <option value="">-- データ読込中... --</option>
+                    </select>
+                    <select id="problem-select" disabled style="flex: 1; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 1rem; background-color: var(--bg-primary);">
+                        <option value="">-- 問題を選択 --</option>
+                    </select>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 8px;">解答する回を選んでください。選ぶと問題画像が表示されます。</p>
+                <div id="problem-accordion" class="problem-accordion"></div>
+            </div>
+            <button id="start-other-test-btn" class="secondary-btn start-other-test-btn hidden" type="button">別の回のテストをスタートする</button>
+            <div id="problem-display" class="problem-display hidden">
+                <div id="problem-display-label" class="problem-display-label"></div>
+                <img id="problem-display-image" class="problem-display-image" alt="問題画像">
+                <div id="problem-display-message" class="problem-display-message"></div>
+            </div>
+        </div>
+
+        <div class="upload-section">
+            <input type="file" id="camera-input" accept="image/*" capture="environment" class="visually-hidden">
+
+            <div id="preview-container" class="preview-container hidden">
+                <div id="image-preview-list" class="image-preview-list"></div>
+                <div class="preview-actions">
+                    <button id="add-more-btn" class="secondary-btn" type="button">追加する</button>
+                    <button id="clear-all-btn" class="secondary-btn" type="button">すべてクリア</button>
+                </div>
+            </div>
+
+            <button id="upload-btn" class="primary-btn large-btn" type="button">
+                解答を撮影・追加する
+            </button>
+        </div>
+
+        <div class="action-section">
+            <button id="evaluate-btn" class="primary-btn massive-btn hidden" type="button">
+                添削する
+            </button>
+            <div id="mismatch-message" class="mismatch-message hidden"></div>
+        </div>
+
+        <div id="loading-indicator" class="loading hidden">
+            <div class="spinner"></div>
+            <p>カガワ先生が添削中...<br>少しお待ちください</p>
+        </div>
+
+    </main>
+
+    <div id="camera-modal" class="modal hidden" style="padding: 0; background: #000;">
+        <div class="camera-viewer">
+            <video id="camera-video" autoplay playsinline title="Camera Viewfinder"></video>
+            <div class="camera-controls">
+                <button id="camera-close-btn" class="camera-btn close" type="button" title="閉じる">×</button>
+                <div class="camera-bottom-actions">
+                    <button id="camera-switch-btn" class="camera-btn switch" type="button" title="カメラ切り替え">↻</button>
+                    <button id="camera-shutter-btn" class="camera-btn shutter" type="button" title="撮影"></button>
+                    <div style="width: 50px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="camera-canvas" style="display: none;"></canvas>
+    <script src="student.js?v=1.4.64"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            let reloadingForUpdate = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (reloadingForUpdate) return;
+                reloadingForUpdate = true;
+                window.location.reload();
+            });
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js?v=1.4.64', { updateViaCache: 'none' })
+                    .then(registration => {
+                        registration.update();
+                        window.setInterval(() => registration.update(), 60 * 60 * 1000);
+                    })
+                    .catch(error => console.error('Service Worker registration failed:', error));
+            });
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
