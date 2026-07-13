@@ -1,8 +1,8 @@
-﻿const CACHE_NAME = 'clear-maker-2b-v1.4.64';
+﻿const CACHE_NAME = 'clear-maker-2b-v1.4.66';
 const APP_ASSETS = [
     './index.html',
-    './student.css?v=1.4.64',
-    './student.js?v=1.4.64',
+    './student.css?v=1.4.66',
+    './student.js?v=1.4.66',
 ];
 
 self.addEventListener('install', event => {

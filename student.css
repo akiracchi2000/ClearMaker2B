@@ -173,7 +173,7 @@ button:disabled {
 
 
 .legacy-problem-select {
-    display: flex !important;
+    display: none !important;
 }
 
 .problem-accordion {

@@ -18,7 +18,7 @@
     <header class="app-header" style="align-items: center;">
         <div style="display: flex; align-items: baseline; gap: 8px;">
             <h1>Clear Maker 2B</h1>
-            <span style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.8); font-weight: 600;">v1.4.64</span>
+            <span style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.8); font-weight: 600;">v1.4.66</span>
         </div>
         <div class="header-actions">
             <button id="admin-check-btn" class="header-check-btn hidden" type="button">確認</button>
@@ -136,7 +136,7 @@
     </div>
 
     <canvas id="camera-canvas" style="display: none;"></canvas>
-    <script src="student.js?v=1.4.64"></script>
+    <script src="student.js?v=1.4.66"></script>
     <script>
         if ('serviceWorker' in navigator) {
             let reloadingForUpdate = false;
@@ -146,7 +146,7 @@
                 window.location.reload();
             });
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js?v=1.4.64', { updateViaCache: 'none' })
+                navigator.serviceWorker.register('./sw.js?v=1.4.66', { updateViaCache: 'none' })
                     .then(registration => {
                         registration.update();
                         window.setInterval(() => registration.update(), 60 * 60 * 1000);
