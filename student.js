@@ -27,6 +27,7 @@ const els = {
     problemDisplayLabel: document.getElementById('problem-display-label'),
     problemDisplayImage: document.getElementById('problem-display-image'),
     problemDisplayMessage: document.getElementById('problem-display-message'),
+    problemFitBtn: document.getElementById('problem-fit-btn'),
     startOtherTestBtn: document.getElementById('start-other-test-btn'),
     uraModeBanner: document.getElementById('ura-mode-banner'),
     achievementStars: document.getElementById('achievement-stars'),
@@ -55,6 +56,7 @@ const els = {
     gradedProblemLabel: document.getElementById('graded-problem-label'),
     gradedProblemImage: document.getElementById('graded-problem-image'),
     gradedProblemMessage: document.getElementById('graded-problem-message'),
+    gradedProblemFitBtn: document.getElementById('graded-problem-fit-btn'),
     screenshotBtn: document.getElementById('screenshot-btn'),
     newQuestionBtn: document.getElementById('new-question-btn'),
 
@@ -272,6 +274,8 @@ async function renderSelectedProblem() {
     els.problemDisplayLabel.textContent = `${problem.label} (${problem.id})`;
     els.problemDisplay.classList.remove('hidden');
     els.problemDisplayImage.removeAttribute('src');
+    setProblemImageFitMode(els.problemDisplayImage, els.problemFitBtn, false);
+    els.problemFitBtn.classList.add('hidden');
     els.problemDisplayImage.alt = `${problem.label} の問題画像`;
     els.problemDisplayMessage.textContent = '問題画像を読み込んでいます...';
 
@@ -281,9 +285,11 @@ async function renderSelectedProblem() {
 
         if (imageData) {
             els.problemDisplayImage.src = imageData;
+            els.problemFitBtn.classList.remove('hidden');
             els.problemDisplayMessage.textContent = '';
         } else if (problem.imageUrl) {
             els.problemDisplayImage.src = problem.imageUrl;
+            els.problemFitBtn.classList.remove('hidden');
             els.problemDisplayMessage.textContent = '';
         } else {
             els.problemDisplayImage.alt = '問題画像が見つかりません';
@@ -293,6 +299,7 @@ async function renderSelectedProblem() {
         console.error(e);
         if (problem.imageUrl) {
             els.problemDisplayImage.src = problem.imageUrl;
+            els.problemFitBtn.classList.remove('hidden');
             els.problemDisplayMessage.textContent = '';
         } else {
             els.problemDisplayImage.alt = '問題画像を読み込めませんでした';
@@ -323,8 +330,22 @@ function clearProblemDisplay() {
     els.problemDisplay.classList.remove('congratulations');
     els.problemDisplayLabel.textContent = '';
     els.problemDisplayImage.removeAttribute('src');
+    setProblemImageFitMode(els.problemDisplayImage, els.problemFitBtn, false);
+    els.problemFitBtn.classList.add('hidden');
     els.problemDisplayImage.alt = '問題画像';
     els.problemDisplayMessage.textContent = '';
+}
+
+function setProblemImageFitMode(image, button, fitPage) {
+    if (!image || !button) return;
+    image.classList.toggle('fit-page', fitPage);
+    button.setAttribute('aria-pressed', fitPage ? 'true' : 'false');
+    button.textContent = fitPage ? '横幅に合わせる' : '1ページ全体を表示する';
+}
+
+function toggleProblemImageFit(image, button) {
+    if (!image || !button) return;
+    setProblemImageFitMode(image, button, !image.classList.contains('fit-page'));
 }
 
 function setProblemPickerVisible(isVisible) {
@@ -424,6 +445,12 @@ function setupEventListeners() {
     els.evaluateBtn.addEventListener('click', evaluateAnswer);
     if (els.toggleProblemBtn) {
         els.toggleProblemBtn.addEventListener('click', toggleProblemFromResult);
+    }
+    if (els.problemFitBtn) {
+        els.problemFitBtn.addEventListener('click', () => toggleProblemImageFit(els.problemDisplayImage, els.problemFitBtn));
+    }
+    if (els.gradedProblemFitBtn) {
+        els.gradedProblemFitBtn.addEventListener('click', () => toggleProblemImageFit(els.gradedProblemImage, els.gradedProblemFitBtn));
     }
     if (els.adminCheckBtn) {
         els.adminCheckBtn.addEventListener('click', validateSpreadsheetFromAdminButton);
@@ -922,6 +949,8 @@ async function showGradedProblem() {
     els.toggleProblemBtn.textContent = '問題を隠す';
     els.gradedProblemLabel.textContent = `${problem.label} (${problem.id})`;
     els.gradedProblemImage.removeAttribute('src');
+    setProblemImageFitMode(els.gradedProblemImage, els.gradedProblemFitBtn, false);
+    els.gradedProblemFitBtn.classList.add('hidden');
     els.gradedProblemMessage.textContent = '問題画像を読み込んでいます...';
 
     try {
@@ -929,9 +958,11 @@ async function showGradedProblem() {
         if (els.gradedProblemDisplay.classList.contains('hidden')) return;
         if (imageData) {
             els.gradedProblemImage.src = imageData;
+            els.gradedProblemFitBtn.classList.remove('hidden');
             els.gradedProblemMessage.textContent = '';
         } else if (problem.imageUrl) {
             els.gradedProblemImage.src = problem.imageUrl;
+            els.gradedProblemFitBtn.classList.remove('hidden');
             els.gradedProblemMessage.textContent = '';
         } else {
             els.gradedProblemMessage.textContent = '問題画像が見つかりません。';
@@ -940,6 +971,7 @@ async function showGradedProblem() {
         console.error(error);
         if (problem.imageUrl) {
             els.gradedProblemImage.src = problem.imageUrl;
+            els.gradedProblemFitBtn.classList.remove('hidden');
             els.gradedProblemMessage.textContent = '';
         } else {
             els.gradedProblemMessage.textContent = '問題画像を読み込めませんでした。';

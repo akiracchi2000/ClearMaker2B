@@ -12,13 +12,13 @@
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-    <link rel="stylesheet" href="student.css?v=1.4.61">
+    <link rel="stylesheet" href="student.css?v=1.4.69">
 </head>
 <body>
     <header class="app-header" style="align-items: center;">
         <div style="display: flex; align-items: baseline; gap: 8px;">
             <h1>Clear Maker 2B</h1>
-            <span style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.8); font-weight: 600;">v1.4.67</span>
+            <span style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.8); font-weight: 600;">v1.4.69</span>
         </div>
         <div class="header-actions">
             <button id="admin-check-btn" class="header-check-btn hidden" type="button">確認</button>
@@ -51,7 +51,10 @@
             <div id="result-badge" class="result-badge"></div>
             <div class="result-review-layout">
                 <div id="graded-problem-display" class="graded-problem-display hidden">
-                    <div id="graded-problem-label" class="problem-display-label"></div>
+                    <div class="problem-display-heading">
+                        <div id="graded-problem-label" class="problem-display-label"></div>
+                        <button id="graded-problem-fit-btn" class="problem-fit-btn screenshot-exclude hidden" type="button" aria-pressed="false">1ページ全体を表示する</button>
+                    </div>
                     <img id="graded-problem-image" class="problem-display-image" alt="添削した問題画像">
                     <div id="graded-problem-message" class="problem-display-message"></div>
                 </div>
@@ -80,12 +83,15 @@
                         <option value="">-- 問題を選択 --</option>
                     </select>
                 </div>
-                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 8px;">解答する回を選んでください。選ぶと問題画像が表示されます。</p>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 8px;">解答する回を選んでください。選ぶと問題画像が表示されます。<span class="release-notice">第3問対策，第4問対策は8/3(月)から選択できるようになります</span></p>
                 <div id="problem-accordion" class="problem-accordion"></div>
             </div>
             <button id="start-other-test-btn" class="secondary-btn start-other-test-btn hidden" type="button">別の回のテストをスタートする</button>
             <div id="problem-display" class="problem-display hidden">
-                <div id="problem-display-label" class="problem-display-label"></div>
+                <div class="problem-display-heading">
+                    <div id="problem-display-label" class="problem-display-label"></div>
+                    <button id="problem-fit-btn" class="problem-fit-btn hidden" type="button" aria-pressed="false">1ページ全体を表示する</button>
+                </div>
                 <img id="problem-display-image" class="problem-display-image" alt="問題画像">
                 <div id="problem-display-message" class="problem-display-message"></div>
             </div>
@@ -136,7 +142,7 @@
     </div>
 
     <canvas id="camera-canvas" style="display: none;"></canvas>
-    <script src="student.js?v=1.4.67"></script>
+    <script src="student.js?v=1.4.69"></script>
     <script>
         if ('serviceWorker' in navigator) {
             let reloadingForUpdate = false;
@@ -146,7 +152,7 @@
                 window.location.reload();
             });
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js?v=1.4.67', { updateViaCache: 'none' })
+                navigator.serviceWorker.register('./sw.js?v=1.4.69', { updateViaCache: 'none' })
                     .then(registration => {
                         registration.update();
                         window.setInterval(() => registration.update(), 60 * 60 * 1000);
