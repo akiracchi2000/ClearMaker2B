@@ -187,13 +187,6 @@ button:disabled {
     display: none !important;
 }
 
-.release-notice {
-    color: #dc2626;
-    font-weight: 700;
-    margin-left: 0.6em;
-}
-
-
 .problem-round-button {
     width: 100%;
     min-height: 64px;
